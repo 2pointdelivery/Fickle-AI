@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fickle AI — Business Autopilot v4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ──────────────── THEMES ──────────────── */
+    html[data-theme="dark"] {
+      --bg: #0a0b0f;
+      --surface: #12141a;
+      --surface2: #1a1d26;
+      --surface3: #22253a;
+      --border: rgba(255, 255, 255, 0.07);
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --input-bg: #0a0b0f;
+    }
+
+    html[data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface2: #f8fafc;
+      --surface3: #e2e8f0;
+      --border: rgba(0, 0, 0, 0.08);
+      --text: #0f172a;
+      --muted: #64748b;
+      --input-bg: #ffffff;
+    }
+
+    :root {
+      --accent: #6366f1;
+      --accent2: #8b5cf6;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .2s, color .2s;
+    }
+
+    /* ──────────────── SIDEBAR ──────────────── */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      z-index: 100;
+      transition: background .2s;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .logo-sub {
+      font-size: 9.5px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    nav {
+      flex: 1;
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all .15s;
+      border: none;
+      background: none;
+      text-align: left;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(99, 102, 241, .15);
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      width: 16px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .sidebar-bottom {
+      padding: 14px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .status-pill.online {
+      background: rgba(16, 185, 129, .12);
+      color: var(--green);
+    }
+
+    .status-pill.offline {
+      background: rgba(239, 68, 68, .1);
+      color: var(--red);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .dot.pulse {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1 }
+      50% { opacity: .3 }
+    }
+
+    /* ─── LIVE CONSOLE ─── */
+    .console-container {
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 10px;
+      opacity: 0.8;
+      animation: fadeIn 0.3s ease-out;
+    }
+    .log-time { color: var(--muted); flex-shrink: 0; }
+    .log-src { color: var(--accent); font-weight: 700; width: 60px; text-transform: uppercase; }
+    .log-msg { color: #fff; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 0.8; transform: translateY(0); }
+    }
+
+    /* Granular Status colors */
+    .status-thinking { background: rgba(99, 102, 241, 0.2) !important; color: var(--accent) !important; animation: pulse 1.5s infinite; }
+    .status-queuing { background: rgba(245, 158, 11, 0.2) !important; color: var(--yellow) !important; }
+    .status-storing { background: rgba(16, 185, 129, 0.2) !important; color: var(--green) !important; }
+
+    .level-warning .log-msg { color: var(--yellow); }
+
+    /* Health Audit Styles */
+    .health-audit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .audit-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .audit-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+    .audit-value { font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .audit-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .status-ok { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .status-error { background: var(--red); box-shadow: 0 0 8px var(--red); }
+    .status-degraded { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+    .full-width { grid-column: 1 / -1; }
+
+    .model-label {
+      font-size: 10.5px;
+      color: var(--muted);
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 2px;
+    }
+
+    .theme-btn {
+      flex: 1;
+      padding: 5px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: none;
+      color: var(--muted);
+      font-size: 11px;
+      cursor: pointer;
+      text-align: center;
+      transition: all .15s;
+      font-family: inherit;
+    }
+
+    .theme-btn.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .theme-btn:hover:not(.active) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ──────────────── MAIN ──────────────── */
+    main {
+      margin-left: 240px;
+      margin-right: 0;
+      padding: 28px;
+      min-height: 100vh;
+      transition: margin-right 0.3s ease;
+    }
+
+    body.chat-open main {
+      margin-right: 320px;
+    }
+
+    /* ──────────────── CHAT SIDEBAR ──────────────── */
+    .chat-sidebar {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 320px;
+      height: 100vh;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      z-index: 101;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    body.chat-open .chat-sidebar {
+      right: 0;
+    }
+
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-header h2 {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-msg {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 85%;
+    }
+
+    .chat-msg.user {
+      background: var(--accent);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg.ai {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-input-area {
+      padding: 15px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent);
+    }
+
+    .chat-toggle {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 50px;
+      height: 50px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+      z-index: 102;
+      transition: transform 0.2s;
+    }
+
+    .chat-toggle:hover {
+      transform: scale(1.05);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    /* ──────────────── HERO ──────────────── */
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(99, 102, 241, .12), rgba(139, 92, 246, .06));
+      border: 1px solid rgba(99, 102, 241, .18);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .hero-emoji {
+      font-size: 42px;
+    }
+
+    .hero-text h2 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .hero-text p {
+      color: var(--muted);
+      font-size: 12.5px;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .server-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .server-pill {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 600;
+      background: rgba(99, 102, 241, .1);
+      color: var(--accent);
+      border: 1px solid rgba(99, 102, 241, .2);
+    }
+
+    /* ──────────────── STATS ──────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: background .2s;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .stat-value.green {
+      color: var(--green);
+    }
+
+    .stat-value.yellow {
+      color: var(--yellow);
+    }
+
+    .stat-value.accent {
+      color: var(--accent);
+    }
+
+    /* ──────────────── BUTTONS ──────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, .12);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, .25);
+    }
+
+    .btn-ghost {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 11.5px;
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    /* ──────────────── CARDS ──────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: background .2s;
+    }
+
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface);
+    }
+
+    .task-feed {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+    }
+
+    .task-item:hover {
+      background: var(--surface2);
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .task-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .task-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .task-type {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+
+    .task-desc {
+      font-size: 12.5px;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-time {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .task-badge {
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+    }
+
+    .badge-pending {
+      background: rgba(245, 158, 11, .12);
+      color: var(--yellow);
+    }
+
+    .badge-processing {
+      background: rgba(99, 102, 241, .12);
+      color: var(--accent);
+    }
+
+    .badge-completed {
+      background: rgba(16, 185, 129, .12);
+      color: var(--green);
+    }
+
+    .badge-failed {
+      background: rgba(239, 68, 68, .12);
+      color: var(--red);
+    }
+
+    .loop-tag {
+      font-size: 9px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 4px;
+      background: var(--surface3);
+      color: var(--muted);
+    }
+
+    /* ──────────────── INTEGRATIONS ──────────────── */
+    .integrations-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      transition: all .14s;
+    }
+
+    .filter-tab.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .free-filter {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      white-space: nowrap;
+      transition: all .14s;
+    }
+
+    .free-filter.active {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(16, 185, 129, .08);
+    }
+
+    .category-section {
+      margin-bottom: 28px;
+    }
+
+    .category-title {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .category-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .integrations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .integration-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all .17s;
+      position: relative;
+    }
+
+    .integration-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, .12);
+    }
+
+    .integration-card.connected {
+      border-color: rgba(16, 185, 129, .45);
+    }
+
+    .int-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .int-icon {
+      font-size: 22px;
+    }
+
+    .int-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .int-cat {
+      font-size: 10.5px;
+      color: var(--muted);
+    }
+
+    .int-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .int-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .cap-tag {
+      font-size: 9.5px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .free-badge {
+      font-size: 9.5px;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, .12);
+      color: var(--green);
+      border: 1px solid rgba(16, 185, 129, .25);
+      font-weight: 700;
+    }
+
+    .connected-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(16, 185, 129, .12);
+      color: var(--green);
+      text-transform: uppercase;
+    }
+
+    /* ──────────────── MODAL ──────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      width: 500px;
+      max-width: 95vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp .2s ease;
+      position: relative;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(16px);
+        opacity: 0
+      }
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .form-hint {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-bottom: 5px;
+      line-height: 1.4;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 9px 12px;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-select option {
+      background: var(--surface);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    /* ──────────────── LOOPS PAGE ──────────────── */
+    .loops-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 16px;
+    }
+
+    .loop-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .loop-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+
+    .loop-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .loop-status {
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .status-idle {
+      background: var(--surface2);
+      color: var(--muted);
+    }
+
+    .status-running {
+      background: rgba(16, 185, 129, .12);
+      color: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+
+    .loop-body {
+      padding: 18px;
+    }
+
+    .loop-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .loop-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-loop {
+      flex: 1;
+    }
+
+    /* ──────────────── SETTINGS ──────────────── */
+    .settings-grid {
+      display: grid;
+      gap: 16px;
+      max-width: 640px;
+    }
+
+    .settings-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .settings-card h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .settings-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .interval-note {
+      font-size: 10.5px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .model-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .model-chip {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      transition: all .14s;
+    }
+
+    .model-chip.active {
+      background: rgba(99, 102, 241, .15);
+      color: var(--accent);
+      border-color: rgba(99, 102, 241, .4);
+    }
+
+    /* ──────────────── TOAST ──────────────── */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .toast {
+      padding: 11px 16px;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 500;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      max-width: 300px;
+      animation: toastIn .25s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes toastIn {
+      from {
+        transform: translateX(30px);
+        opacity: 0
+      }
+    }
+
+    .toast.success {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .toast.info {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface3);
+      border-radius: 3px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 6px 0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      font-size: 13px;
+      width: 100%;
+    }
+
+    .empty-state .ei {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ─── SIDEBAR ─────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🤖</div>
+      <div>
+        <div class="logo-text">Fickle AI</div>
+        <div class="logo-sub">Business Autopilot</div>
+      </div>
+    </div>
+    <nav>
+      <button class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="showPage('loops',this)">
+        <span class="nav-icon">🔄</span> AI Loops
+      </button>
+      <button class="nav-item" onclick="showPage('integrations',this)">
+        <span class="nav-icon">🔌</span> Integrations
+      </button>
+      <button class="nav-item" onclick="showPage('activity',this)">
+        <span class="nav-icon">📋</span> Activity Log
+      </button>
+      <button class="nav-item" onclick="showPage('memory',this)">
+        <span class="nav-icon">🧠</span> AI Memory
+      </button>
+      <div class="divider"></div>
+      <button class="nav-item" onclick="showPage('settings',this)">
+        <span class="nav-icon">⚙️</span> Settings
+      </button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div id="sidebarStatus" class="status-pill offline">
+        <span class="dot" id="statusDot"></span>
+        <span id="sidebarStatusText">Offline</span>
+      </div>
+      <div style="padding: 0 14px; display: flex; flex-direction: column; gap: 4px;">
+        <div id="cloudStatusPill" class="status-pill" style="font-size: 9px; padding: 4px 8px; display: none;">
+          <span class="dot" style="width: 4px; height: 4px;"></span>
+          Cloud AI: <span id="cloudStatusText">Offline</span>
+        </div>
+        <div id="localStatusPill" class="status-pill" style="font-size: 9px; padding: 4px 8px; display: none;">
+          <span class="dot" style="width: 4px; height: 4px;"></span>
+          Local AI: <span id="localStatusText">Offline</span>
+        </div>
+      </div>
+      <div class="theme-toggle">
+        <button class="theme-btn" id="themeLight" onclick="setTheme('light')">☀️</button>
+        <button class="theme-btn" id="themeDark" onclick="setTheme('dark')">🌙</button>
+        <button class="theme-btn active" id="themeAuto" onclick="setTheme('auto')">💻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─────────────────────────────────────────────── -->
+  <main>
+
+    <!-- ▸ DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Overall system health and autonomous status</p>
+      </div>
+      <div class="hero-gradient">
+        <div class="hero-emoji">🤖</div>
+        <div class="hero-text">
+          <h2>AI CEO is <span id="heroStatus">Offline</span></h2>
+          <p>Running autonomous business operations across all departments.</p>
+          <div class="server-pills" id="connectedPills"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button class="btn btn-primary" id="startBtn" onclick="startSystem()">▶ Start Autopilot</button>
+        <button class="btn btn-danger" id="stopBtn" onclick="stopSystem()" disabled>⏹ Stop</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Tasks</div>
+          <div class="stat-value accent" id="statTotal">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Completed</div>
+          <div class="stat-value green" id="statCompleted">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pending</div>
+          <div class="stat-value yellow" id="statPending">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Models</div>
+          <div class="stat-value accent" id="statModels">0</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">📡 Recent Activity</div>
+        <div class="task-feed" id="taskFeed"></div>
+      </div>
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header">🧠 Live System Console</div>
+        <div class="console-container" id="liveConsole">
+          <div class="log-line"><span class="log-msg">Initializing live monitor...</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ AI LOOPS -->
+    <div id="page-loops" class="page">
+      <div class="page-header">
+        <h1>Autonomous AI Loops</h1>
+        <p>Specialized directors managing your business segments</p>
+      </div>
+      <div class="loops-grid">
+        <!-- CEO -->
+        <div class="loop-card">
+          <div class="loop-header">
+            <div class="loop-title">🤖 CEO Strategy</div>
+            <div class="loop-status status-idle" id="status-ceo">Idle</div>
+          </div>
+          <div class="loop-body">
+            <p class="loop-desc">Master planner. Reads company status and delegates priorities to all other loops.</p>
+            <div class="loop-actions">
+              <button class="btn btn-primary btn-sm btn-loop" id="btnCeo" onclick="triggerLoop('ceo')">Run Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="editPrompt('ceo')">⚙️ Prompt</button>
+            </div>
+          </div>
+        </div>
+        <!-- Operations -->
+        <div class="loop-card">
+          <div class="loop-header">
+            <div class="loop-title">⚙️ Operations & Logistics</div>
+            <div class="loop-status status-idle" id="status-operations">Idle</div>
+          </div>
+          <div class="loop-body">
+            <p class="loop-desc">Manages sales, product info, delivery services, and pickup/dropoff logistics.</p>
+            <div class="loop-actions">
+              <button class="btn btn-primary btn-sm btn-loop" id="btnOperations" onclick="triggerLoop('operations')">Run
+                Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="editPrompt('operations')">⚙️ Prompt</button>
+            </div>
+          </div>
+        </div>
+        <!-- Marketing -->
+        <div class="loop-card">
+          <div class="loop-header">
+            <div class="loop-title">📣 Marketing & Social</div>
+            <div class="loop-status status-idle" id="status-marketing">Idle</div>
+          </div>
+          <div class="loop-body">
+            <p class="loop-desc">Content creation, social posting, and growth campaigns across all platforms.</p>
+            <div class="loop-actions">
+              <button class="btn btn-primary btn-sm btn-loop" id="btnMarketing" onclick="triggerLoop('marketing')">Run
+                Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="editPrompt('marketing')">⚙️ Prompt</button>
+            </div>
+          </div>
+        </div>
+        <!-- Outreach -->
+        <div class="loop-card">
+          <div class="loop-header">
+            <div class="loop-title">🚀 Growth & Outreach</div>
+            <div class="loop-status status-idle" id="status-outreach">Idle</div>
+          </div>
+          <div class="loop-body">
+            <p class="loop-desc">B2B lead generation, personalized cold messaging, and sales follow-ups.</p>
+            <div class="loop-actions">
+              <button class="btn btn-primary btn-sm btn-loop" id="btnOutreach" onclick="triggerLoop('outreach')">Run
+                Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="editPrompt('outreach')">⚙️ Prompt</button>
+            </div>
+          </div>
+        </div>
+        <!-- Support -->
+        <div class="loop-card">
+          <div class="loop-header">
+            <div class="loop-title">🎧 Customer Support</div>
+            <div class="loop-status status-idle" id="status-support">Idle</div>
+          </div>
+          <div class="loop-body">
+            <p class="loop-desc">Ticketing, FAQ building, and proactive customer success and retention.</p>
+            <div class="loop-actions">
+              <button class="btn btn-primary btn-sm btn-loop" id="btnSupport" onclick="triggerLoop('support')">Run
+                Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="editPrompt('support')">⚙️ Prompt</button>
+            </div>
+          </div>
+        </div>
+        <!-- Fundraising -->
+        <div class="loop-card">
+          <div class="loop-header">
+            <div class="loop-title">💰 Fundraising & Investor Relations</div>
+            <div class="loop-status status-idle" id="status-fundraising">Idle</div>
+          </div>
+          <div class="loop-body">
+            <p class="loop-desc">Raising capital, tracking traction metrics, and managing pitch communications.</p>
+            <div class="loop-actions">
+              <button class="btn btn-primary btn-sm btn-loop" id="btnFundraising"
+                onclick="triggerLoop('fundraising')">Run Now</button>
+              <button class="btn btn-ghost btn-sm" onclick="editPrompt('fundraising')">⚙️ Prompt</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ INTEGRATIONS -->
+    <div id="page-integrations" class="page">
+      <div class="page-header">
+        <h1>Integrations</h1>
+        <p>Connect tools to your autonomous engine</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <div class="filter-tabs" id="catFilters">
+          <span class="filter-tab active" onclick="filterCat('all',this)">All</span>
+        </div>
+        <button class="free-filter" id="freeFilterBtn" onclick="toggleFreeFilter()">🆓 Free only</button>
+      </div>
+      <div id="integrationsContainer" class="integrations-grid"></div>
+    </div>
+
+    <!-- ▸ ACTIVITY LOG -->
+    <div id="page-activity" class="page">
+      <div class="page-header">
+        <h1>Activity Log</h1>
+        <p>Historical record of all AI actions</p>
+      </div>
+      <div class="card">
+        <div class="task-feed" id="activityFeed"></div>
+      </div>
+    </div>
+
+    <!-- ▸ AI MEMORY -->
+    <div id="page-memory" class="page">
+      <div class="page-header">
+        <h1>AI Memory</h1>
+        <p>Contextual knowledge used by loops</p>
+      </div>
+      <div style="margin-bottom:16px;"><button class="btn btn-primary btn-sm" onclick="openMemoryModal()">+ Add
+          Fact</button></div>
+      <div class="memory-grid" id="memoryGrid"></div>
+    </div>
+
+    <div id="page-settings" class="page">
+      <div class="page-header">
+        <h1>Settings</h1>
+        <p>Core system configuration</p>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-card">
+          <h3>🦙 Ollama AI</h3>
+          <div class="form-group">
+            <label class="form-label">Host URL</label>
+            <input class="form-input" id="settOllamaHost" placeholder="http://127.0.0.1:11434" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cloud API Key (Optional)</label>
+            <input class="form-input" id="settOllamaApiKey" type="password" placeholder="sk-xxxx" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Default Model</label>
+            <select class="form-input" id="settOllamaModel" onchange="setModel(this.value)"></select>
+            <div class="model-chips" id="modelChips" style="margin-top:10px;"></div>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>📥 Pull New Model</h3>
+          <div class="form-hint">Pull additional free models from Ollama library (e.g. qwen2.5:1.5b, deepseek-r1:1.5b)</div>
+          <div style="display:flex; gap:8px;">
+            <input class="form-input" id="pullModelInput" placeholder="model:tag (e.g. llama3.2:1b)"/>
+            <button class="btn btn-ghost" onclick="pullModel()">Pull Now</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>⏱ Loop Frequency (ms)</h3>
+          <div class="form-hint">Set how often each director should autonomously re-plan (0 = manual only)</div>
+          <div class="settings-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group"><label class="form-label">CEO Loop</label><input type="number" class="form-input" id="freq-ceo"/></div>
+            <div class="form-group"><label class="form-label">Ops Loop</label><input type="number" class="form-input" id="freq-operations"/></div>
+            <div class="form-group"><label class="form-label">Marketing</label><input type="number" class="form-input" id="freq-marketing"/></div>
+            <div class="form-group"><label class="form-label">Outreach</label><input type="number" class="form-input" id="freq-outreach"/></div>
+            <div class="form-group"><label class="form-label">Support</label><input type="number" class="form-input" id="freq-support"/></div>
+            <div class="form-group"><label class="form-label">Fundraising</label><input type="number" class="form-input" id="freq-fundraising"/></div>
+          </div>
+        </div>
+
+        <div class="settings-card full-width" id="healthAuditCard">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="margin:0;">🩺 System Health Audit</h3>
+            <button class="btn btn-ghost btn-sm" onclick="runFullAudit()">🔍 Run Full Scan</button>
+          </div>
+          <div id="healthAuditResults" class="health-audit-grid">
+            <div class="audit-item loading">Click "Run Full Scan" to begin diagnostic...</div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Save & Restart Cycles</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ─── AI SIDEBAR ─────────────────────────────────────────── -->
+  <div class="chat-sidebar" id="chatSidebar">
+    <div class="chat-header">
+      <h2><span>✨</span> AI Assistant</h2>
+      <button class="nav-item" style="width:auto; padding:5px" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg ai">Hello! I'm your Business Assistant. How can I help you manage your tasks today?</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Command AI..." onkeyup="if(event.key==='Enter') sendChatMessage()"/>
+      <button class="btn btn-primary" style="padding:8px" onclick="sendChatMessage()">➤</button>
+    </div>
+  </div>
+
+  <div class="chat-toggle" onclick="toggleChat()" id="chatToggle">
+    <span style="font-size:20px">💬</span>
+  </div>
+
+  <!-- ─── PROMPT MODAL ─── -->
+  <div class="modal-overlay" id="promptModal">
+    <div class="modal" style="width:600px;">
+      <button class="modal-close" onclick="closeModal('promptModal')">✕</button>
+      <div class="modal-title">Edit Loop Prompt</div>
+      <div class="modal-sub" id="promptModalSub">Customize the instructions for this AI director</div>
+      <div class="form-group">
+        <label class="form-label">System Instructions</label>
+        <textarea class="form-input" id="loopPromptInput" rows="12"
+          style="font-family:monospace; font-size:12px; resize:vertical;"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeModal('promptModal')">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="savePrompt()">Save Directive</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CREDENTIAL MODAL ─── -->
+  <div class="modal-overlay" id="credModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('credModal')">✕</button>
+      <div class="modal-title" id="credModalTitle">Connect Integration</div>
+      <div class="modal-sub" id="credModalSub"></div>
+      <form id="credForm" onsubmit="saveCredentials(event)">
+        <input type="hidden" id="credServerId" />
+        <div id="credFields"></div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary btn-sm">Connect</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── MEMORY MODAL ─── -->
+  <div class="modal-overlay" id="memModal">
+    <div class="modal" style="width:400px;">
+      <button class="modal-close" onclick="closeModal('memModal')">✕</button>
+      <div class="modal-title">Add Memory Fact</div>
+      <div class="form-group">
+        <label class="form-label">Key (Identifier)</label>
+        <input class="form-input" id="memKey" placeholder="brand_info" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Value (Content)</label>
+        <textarea class="form-input" id="memValue" rows="4"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-sm" onclick="saveMemory()">Save fact</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    let currentLoopEditing = '';
+
+    // ─── THEME ───
+    function setTheme(t) {
+      localStorage.setItem('theme', t);
+      applyTheme(t);
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      const btnId = 'theme' + t.charAt(0).toUpperCase() + t.slice(1);
+      if (document.getElementById(btnId)) document.getElementById(btnId).classList.add('active');
+    }
+    function applyTheme(t) {
+      const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t === 'auto' ? sys : t);
+    }
+    (function () {
+      const t = localStorage.getItem('theme') || 'auto';
+      applyTheme(t);
+      setTimeout(() => setTheme(t), 100);
+    })();
+
+    // ─── NAVIGATION ───
+    function showPage(id, btn) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+      if (id === 'integrations') renderIntegrations();
+      if (id === 'settings') loadSettings();
+      if (id === 'memory') pollStatus();
+    }
+
+    // ─── CHAT SIDEBAR ───
+    function toggleChat() {
+      document.body.classList.toggle('chat-open');
+      if (document.body.classList.contains('chat-open')) {
+          document.getElementById('chatInput').focus();
+      }
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const msgContainer = document.getElementById('chatMessages');
+        
+        // Add User Message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'chat-msg user';
+        userMsg.textContent = text;
+        msgContainer.appendChild(userMsg);
+        
+        input.value = '';
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+
+        // Add "Thinking..." placeholder
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'chat-msg ai';
+        aiMsg.textContent = '...';
+        msgContainer.appendChild(aiMsg);
+
+        try {
+            const res = await fetch('/api/chat/interactive', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+            const data = await res.json();
+            aiMsg.textContent = data.reply || 'No response from intelligence.';
+            
+            // If AI modified tasks/memory, refresh data
+            if (data.modified) {
+                pollStatus();
+            }
+        } catch (e) {
+            aiMsg.textContent = 'Connection error. Is the server running?';
+            aiMsg.classList.add('error');
+        }
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+
+    // ─── TOAST ───
+    function toast(msg, type = 'success') {
+      const el = document.createElement('div');
+      el.className = `toast ${type}`;
+      el.textContent = msg;
+      document.getElementById('toastContainer').appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    // ─── STATUS ───
+    async function pollStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const d = await res.json();
+
+        // Sidebar/Hero
+        const dot = document.getElementById('statusDot');
+        const pill = document.getElementById('sidebarStatus');
+        pill.className = `status-pill ${d.running ? 'online' : 'offline'}`;
+        dot.className = `dot ${d.running ? 'pulse' : ''}`;
+        document.getElementById('sidebarStatusText').textContent = d.running ? 'Autopilot Active' : 'System Offline';
+        document.getElementById('heroStatus').textContent = d.running ? 'Running' : 'Offline';
+        
+        // Update Thought
+        const thoughtEl = document.querySelector('.hero-text p');
+        if (thoughtEl && d.systemThought) {
+           thoughtEl.innerHTML = `<span style="color:var(--accent); font-weight:600;">ACTIVE THOUGHT:</span> ${d.systemThought}`;
+        }
+
+        // Hybrid health
+        const cloudPill = document.getElementById('cloudStatusPill');
+        const localPill = document.getElementById('localStatusPill');
+        if (d.aiHealth) {
+          cloudPill.style.display = 'flex';
+          localPill.style.display = 'flex';
+
+          cloudPill.className = `status-pill ${d.aiHealth.cloud.ok ? 'online' : 'offline'}`;
+          document.getElementById('cloudStatusText').textContent = d.aiHealth.cloud.ok ? (d.aiHealth.cloud.isProxy ? 'Cloud Proxy Active' : 'Cloud Native Active') : 'Cloud Offline';
+
+          localPill.className = `status-pill ${d.aiHealth.local.ok ? 'online' : 'offline'}`;
+          document.getElementById('localStatusText').textContent = d.aiHealth.local.ok ? 'Local READY' : 'Local OFFLINE';
+
+          // Refine status pills for "Online/Offline" clarity with tooltips/error details
+          const cloudTxt = d.aiHealth.cloud.ok ? 'CLOUD ONLINE' : 'CLOUD OFFLINE';
+          const localTxt = d.aiHealth.local.ok ? 'LOCAL ONLINE' : 'LOCAL OFFLINE';
+          
+          document.getElementById('cloudStatusText').textContent = cloudTxt;
+          document.getElementById('localStatusText').textContent = localTxt;
+          
+          // Add detailed title for debugging
+          cloudPill.title = d.aiHealth.cloud.ok ? (d.aiHealth.cloud.isProxy ? 'Using Cloud Proxy' : 'Connected directly') : `Error: ${d.aiHealth.cloud.error || 'Unknown'}`;
+          localPill.title = d.aiHealth.local.ok ? 'Local Ollama active' : `Error: ${d.aiHealth.local.error || 'Not running'}`;
+          
+          if(d.aiHealth.cloud.error && d.running) {
+             console.warn("Cloud AI Diagnostic:", d.aiHealth.cloud.error);
+          }
+        }
+
+        // Stats
+        document.getElementById('statTotal').textContent = d.tasks.length;
+        document.getElementById('statCompleted').textContent = d.tasks.filter(t => t.status === 'completed').length;
+        document.getElementById('statPending').textContent = d.tasks.filter(t => t.status === 'pending').length;
+        document.getElementById('statModels').textContent = (d.availableModels || []).length;
+
+        // Loop Status
+        const loops = ['ceo', 'marketing', 'support', 'outreach', 'operations', 'fundraising'];
+        loops.forEach(l => {
+          const el = document.getElementById('status-' + l);
+          const state = d.loopStatus?.[l] || 'idle';
+          if (el) {
+            el.className = `loop-status status-${state}`;
+            el.textContent = state.toUpperCase();
+          }
+        });
+
+        // Connectivity
+        const pills = document.getElementById('connectedPills');
+        pills.innerHTML = d.connectedServers.map(s => `<span class="server-pill">${s}</span>`).join('') || '<span style="color:var(--muted); font-size:11px">No tools connected</span>';
+
+        // Feeds
+        renderTasks(d.tasks.slice(0, 5), document.getElementById('taskFeed'));
+        renderTasks(d.tasks, document.getElementById('activityFeed'));
+
+        // Memory
+        if (document.getElementById('page-memory').classList.contains('active')) renderMemory(d.memory);
+
+        // Integrations
+        if (document.getElementById('page-integrations').classList.contains('active')) renderIntegrations(d);
+
+        // Logs
+        renderLogs(d.logs || [], document.getElementById('liveConsole'));
+
+        // Sync button states
+        if (document.getElementById('startBtn')) document.getElementById('startBtn').disabled = d.running;
+        if (document.getElementById('stopBtn')) document.getElementById('stopBtn').disabled = !d.running;
+        document.querySelectorAll('.btn-loop').forEach(b => b.disabled = !d.running);
+
+      } catch (e) { }
+    }
+    setInterval(pollStatus, 1000);
+
+    function formatTime(iso) {
+        if (!iso) return '';
+        const date = new Date(iso);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderTasks(tasks, el) {
+      if (!tasks.length) { el.innerHTML = '<div class="empty-state">No activity yet</div>'; return; }
+      el.innerHTML = tasks.slice(0, 50).map(t => {
+        const p = JSON.parse(t.payload || '{}');
+        const timeStr = formatTime(t.created_at);
+        return `<div class="task-item">
+            <div class="task-meta">
+                <div class="task-type">
+                    ${t.type} <span class="loop-tag">${p.loop || ''}</span>
+                    <span style="font-size:10px; color:var(--muted); margin-left:8px;">${timeStr}</span>
+                </div>
+                <div class="task-desc">${p.description}</div>
+            </div>
+            <div class="task-badge badge-${t.status}">${t.status}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderLogs(logs, el) {
+      if (!logs.length) return;
+      // Only update if the newest log ID changed to avoid jumpy scrolling
+      const latestId = logs[0].id;
+      if (el.dataset.lastLogId == latestId) return;
+      el.dataset.lastLogId = latestId;
+
+      el.innerHTML = logs.reverse().map(l => {
+        const time = new Date(l.created_at).toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const levelClass = `level-${l.level}`;
+        return `<div class="log-line ${levelClass}">
+          <span class="log-time">[${time}]</span>
+          <span class="log-src">${l.source}</span>
+          <span class="log-msg">${l.message}</span>
+        </div>`;
+      }).join('');
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function renderMemory(mem) {
+      const grid = document.getElementById('memoryGrid');
+      grid.style.display = 'grid'; grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))'; grid.style.gap = '12px';
+      if (!mem.length) { grid.innerHTML = '<div class="empty-state">No memory facts stored</div>'; return; }
+      grid.innerHTML = mem.map(m => `
+        <div class="card" style="padding:16px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                <span style="font-size:10px; font-weight:800; color:var(--accent); text-transform:uppercase">${m.key}</span>
+                <button onclick="deleteMemory('${m.key}')" style="background:none; border:none; color:var(--muted); cursor:pointer">✕</button>
+            </div>
+            <div style="font-size:12.5px">${m.value}</div>
+        </div>
+    `).join('');
+    }
+
+    // ─── LOOPS ───
+    async function triggerLoop(name) {
+      const btn = document.getElementById('btn' + name.charAt(0).toUpperCase() + name.slice(1));
+      if (btn) btn.disabled = true;
+      try {
+        const res = await fetch(`/api/loops/${name}`, { method: 'POST' });
+        const d = await res.json();
+        toast(d.success ? `${name} loop started` : d.message, d.success ? 'success' : 'error');
+      } catch (e) { toast('Trigger failed', 'error'); }
+      setTimeout(() => { if (btn) btn.disabled = false; }, 2000);
+    }
+
+    async function editPrompt(loop) {
+      currentLoopEditing = loop;
+      const res = await fetch(`/api/prompts/${loop}`);
+      const d = await res.json();
+      document.getElementById('loopPromptInput').value = d.prompt || '';
+      document.getElementById('promptModalSub').textContent = `Instructions for ${loop.toUpperCase()} Director`;
+      document.getElementById('promptModal').classList.add('open');
+    }
+
+    async function savePrompt() {
+      const prompt = document.getElementById('loopPromptInput').value;
+      await fetch(`/api/prompts/${currentLoopEditing}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      toast('Prompt directive updated');
+      closeModal('promptModal');
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    // ─── REST OF LOGIC (MINIFIED FOR BROWSER) ───
+    async function startSystem() { await fetch('/api/start', { method: 'POST' }); toast('Autopilot Active'); pollStatus(); }
+    async function stopSystem() { await fetch('/api/stop', { method: 'POST' }); toast('System Stopped', 'info'); pollStatus(); }
+
+    async function loadSettings() {
+      const res = await fetch('/api/settings');
+      const s = await res.json();
+      document.getElementById('settOllamaHost').value = s.ollamaHost;
+      document.getElementById('settOllamaApiKey').value = s.ollamaApiKey;
+      
+      const modelSelect = document.getElementById('settOllamaModel');
+      modelSelect.innerHTML = s.availableModels.map(m => `<option value="${m}" ${m === s.ollamaModel ? 'selected' : ''}>${m}</option>`).join('');
+      
+      const intervals = s.intervals || {};
+      ['ceo','operations','marketing','outreach','support','fundraising'].forEach(l => {
+         const el = document.getElementById('freq-' + l);
+         if(el) el.value = intervals[l] || (l === 'ceo' ? 30000 : 0);
+      });
+
+      const chips = document.getElementById('modelChips');
+      const current = s.ollamaModel;
+      
+      // Ensure we highlight active models vs recommended ones
+      chips.innerHTML = s.availableModels.map(m => {
+          const isLocal = s.aiHealth?.local?.models?.includes(m);
+          const isCloud = s.aiHealth?.cloud?.models?.includes(m);
+          const statusIcon = isLocal ? '🏠' : (isCloud ? '☁️' : '📥');
+          return `<span class="model-chip ${m === current ? 'active' : ''}" onclick="setModel('${m}')" title="${statusIcon === '📥' ? 'Click to pull locally' : 'Ready to use'}">
+            ${statusIcon} ${m}
+          </span>`;
+      }).join('');
+
+      // Auto-run health scan on load
+      runFullAudit();
+    }
+    async function setModel(m) { document.getElementById('settOllamaModel').value = m; saveSettings(); }
+    
+    async function pullModel() {
+      const model = document.getElementById('pullModelInput').value;
+      if(!model) return toast('Model name required', 'error');
+      toast(`Pulling ${model}... please wait`, 'info');
+      await fetch('/api/models/pull', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model }) });
+    }
+
+    async function saveSettings() {
+      const intervals = {};
+      ['ceo','operations','marketing','outreach','support','fundraising'].forEach(l => {
+         intervals[l] = parseInt(document.getElementById('freq-' + l).value || "0");
+      });
+
+      const body = {
+        ollamaHost: document.getElementById('settOllamaHost').value,
+        ollamaApiKey: document.getElementById('settOllamaApiKey').value,
+        ollamaModel: document.getElementById('settOllamaModel').value,
+        intervals
+      };
+      await fetch('/api/settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      toast('Settings saved. System restarted.'); loadSettings();
+    }
+
+    let registry = { servers: [], categories: [] };
+    let currentCat = 'all';
+    let freeOnly = false;
+    let creds = {};
+
+    async function renderIntegrations(statusData) {
+      if (!statusData) {
+        // Fallback for direct navigation calls
+        const sRes = await fetch('/api/status');
+        statusData = await sRes.json();
+      }
+      const d = statusData; // Keep 'd' for the map inner scope
+      const res = await fetch('/api/registry'); registry = await res.json();
+      const credRes = await fetch('/api/credentials'); 
+      creds = (await credRes.json()).credentials;
+      
+      const filterBox = document.getElementById('catFilters');
+      filterBox.innerHTML = '<span class="filter-tab '+(currentCat==='all'?'active':'')+'" onclick="filterCat(\'all\',this)">All</span>' + 
+        registry.categories.map(c => `<span class="filter-tab ${currentCat===c?'active':''}" onclick="filterCat('${c}',this)">${c}</span>`).join('');
+
+      const container = document.getElementById('integrationsContainer');
+      const filtered = registry.servers.filter(s => {
+          if(currentCat !== 'all' && s.category !== currentCat) return false;
+          if(freeOnly && !s.free) return false;
+          return true;
+      });
+
+      if(!filtered.length) { container.innerHTML = '<div class="empty-state">No integrations match filters</div>'; return; }
+
+      container.innerHTML = filtered.map(s => {
+          const status = d.mcpStatus?.[s.id] || { status: 'idle' };
+          const isConnected = status.status === 'connected';
+          const isError = status.status === 'error';
+          
+          return `
+            <div class="integration-card ${creds[s.id]?.enabled ? 'connected' : ''} ${isError ? 'error' : ''}" onclick="openCred('${s.id}')">
+                <div class="int-header">
+                    <span class="int-icon">${s.icon}</span>
+                    <span class="int-name">${s.name} ${isConnected ? '<span class="status-pill online" style="font-size:8px; padding:2px 8px; margin-left:auto">CONNECTED</span>' : (isError ? '<span class="status-pill offline" style="font-size:8px; padding:2px 8px; margin-left:auto">ERROR</span>' : '')}</span>
+                </div>
+                <div class="int-desc">${status.error || s.description}</div>
+                <div class="int-badges">
+                    ${s.free ? '<span class="free-badge">FREE</span>' : ''}
+                </div>
+            </div>
+          `;
+      }).join('');
+    }
+    async function runFullAudit() {
+      const container = document.getElementById('healthAuditResults');
+      container.innerHTML = '<div class="audit-item loading" style="grid-column: 1/-1">Scanning environment...</div>';
+      
+      try {
+        const res = await fetch('/api/health/full');
+        const d = await res.json();
+        
+        container.innerHTML = `
+          <div class="audit-box">
+            <span class="audit-label">API Gateway</span>
+            <div class="audit-value">
+              <span class="audit-status status-${d.api.status === 'ok' ? 'ok' : 'error'}"></span>
+              ${d.api.status === 'ok' ? 'Online & Responsive' : 'Service Down'}
+            </div>
+          </div>
+          <div class="audit-box">
+            <span class="audit-label">AI Engine</span>
+            <div class="audit-value">
+              <span class="audit-status status-${d.ai.local.ok ? 'ok' : 'error'}"></span>
+              ${d.ai.local.ok ? 'Local (Ollama) Online' : 'Local Offline'}
+            </div>
+            <div class="audit-value" style="font-size:10px; margin-top:-4px;">
+              <span class="audit-status status-${d.ai.cloud.ok ? 'ok' : 'degraded'}"></span>
+              Cloud ${d.ai.cloud.ok ? 'Connected' : 'Unavailable'}
+            </div>
+          </div>
+          <div class="audit-box">
+            <span class="audit-label">Task Queues</span>
+            <div class="audit-value">
+              <span class="audit-status status-${d.queues.status === 'ok' ? 'ok' : 'error'}"></span>
+              ${d.queues.status === 'ok' ? 'Queue Active' : 'Queue Halted'}
+            </div>
+            <div class="audit-value" style="font-size:10px; margin-top:-4px;">
+              ${d.queues.details.workerCount} Workers Registered
+            </div>
+          </div>
+          <div class="audit-box">
+            <span class="audit-label">Orchestrator</span>
+            <div class="audit-value">
+              <span class="audit-status status-${d.orchestrator.status === 'active' ? 'ok' : 'degraded'}"></span>
+              System ${d.orchestrator.status}
+            </div>
+          </div>
+          <div class="audit-box">
+            <span class="audit-label">AI Memory</span>
+            <div class="audit-value">
+              <span class="audit-status status-${d.db.status === 'ok' ? 'ok' : 'error'}"></span>
+              ${d.db.memoryCount} Knowledge Nodes
+            </div>
+          </div>
+          <div class="audit-box">
+            <span class="audit-label">System Console</span>
+            <div class="audit-value">
+              <span class="audit-status status-ok"></span>
+              Logging via SQLite
+            </div>
+          </div>
+          <div class="audit-box full-width">
+            <span class="audit-label">Integrations (MCP Servers)</span>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+              ${Object.entries(d.mcp.servers).length ? 
+                Object.entries(d.mcp.servers).map(([name, s]) => `
+                  <div class="status-pill ${s.status === 'connected' ? 'online' : 'offline'}" style="font-size:10px">
+                    ${name}: ${s.status === 'connected' ? 'OK' : 'FAIL'}
+                  </div>
+                `).join('') : '<span style="color:var(--muted); font-size:11px">No tool servers active</span>'
+              }
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        container.innerHTML = `<div class="audit-item error" style="grid-column: 1/-1">Audit failed: ${e.message}</div>`;
+      }
+    }
+    function openCred(id) {
+      const s = registry.servers.find(x => x.id === id);
+      document.getElementById('credServerId').value = id;
+      document.getElementById('credModalTitle').textContent = s.name;
+      const docLink = s.docUrl ? `<div style="margin-bottom:15px; font-size:11px;"><a href="${s.docUrl}" target="_blank" style="color:var(--accent); text-decoration:none">📖 Documentation & API Setup →</a></div>` : '';
+      
+      let fieldsHtml = docLink + (s.fields || []).map(f => `
+          <div class="form-group">
+            <label class="form-label">${f.label}</label>
+            <input class="form-input" name="${f.key}" type="${f.type}" placeholder="${f.hint || ''}" value="${creds[id]?.envVars?.[f.key] || ''}"/>
+          </div>
+      `).join('');
+
+      if (s.authType === 'oauth') {
+          fieldsHtml += `
+            <div class="oauth-section" style="margin-top:20px; padding:15px; background:rgba(255,255,255,0.03); border-radius:8px; border:1px dashed var(--muted)">
+                <div style="font-size:11px; color:var(--muted); margin-bottom:10px;"><b>STEP 2:</b> After saving credentials above, authenticate.</div>
+                <button type="button" onclick="startOAuth('${id}')" class="btn btn-primary" style="width:100%; justify-content:center; background:#4285f4; border:none">
+                    <span style="font-size:14px; margin-right:8px">🔑</span> Authorize via Web
+                </button>
+            </div>
+          `;
+      }
+      
+      document.getElementById('credFields').innerHTML = fieldsHtml;
+      document.getElementById('credModal').classList.add('open');
+    }
+
+    async function startOAuth(id) {
+        // Save current fields first
+        const form = document.querySelector('#credModal form');
+        const body = {}; 
+        new FormData(form).forEach((v, k) => { if(k !== 'serverId') body[k] = v; });
+        
+        await fetch(`/api/credentials/${id}`, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(body) 
+        });
+        
+        // Redirect to auth initiator
+        window.location.href = `/api/auth/${id}`;
+    }
+    function filterCat(cat, btn) {
+        currentCat = cat;
+        renderIntegrations();
+    }
+    function toggleFreeFilter() {
+        freeOnly = !freeOnly;
+        document.getElementById('freeFilterBtn').classList.toggle('active', freeOnly);
+        renderIntegrations();
+    }
+
+    async function saveCredentials(e) {
+      e.preventDefault();
+      const id = document.getElementById('credServerId').value;
+      const body = {}; new FormData(e.target).forEach((v, k) => body[k] = v);
+      await fetch(`/api/credentials/${id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      toast('Connected'); closeModal('credModal'); renderIntegrations();
+    }
+
+    async function saveMemory() {
+      const key = document.getElementById('memKey').value;
+      const value = document.getElementById('memValue').value;
+      await fetch('/api/memory', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, value }) });
+      toast('Memory added'); closeModal('memModal'); pollStatus();
+    }
+    async function deleteMemory(k) { await fetch(`/api/memory/${k}`, { method: 'DELETE' }); toast('Memory deleted', 'info'); pollStatus(); }
+    function openMemoryModal() {
+      document.getElementById('memKey').value = '';
+      document.getElementById('memValue').value = '';
+      document.getElementById('memModal').classList.add('open');
+    }
+
+    pollStatus();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+node_modules
+.env
+*.log
+google_creds_*.json
+google_token_*.json
+test-oauth-mock.js
+verify-persistence.js
+verify-integrations.js
+final-verify.js
